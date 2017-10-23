@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Train Time</title>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+	<!-- internal css -->
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+
+	<!-- google fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister|Open+Sans" rel="stylesheet">
+
+</head>
+
+<body>
+
+	<div class="container">
+
+		<div class="jumbotron mainHeading">
+		  <h1 class="display-3">Anytime is Train Time</h1>
+		  <p class="lead">Choo Choo. Chee Chee.</p>
+		</div>
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">Current Train Schedule</div>
+
+  			<div class="panel-body">
+  				
+				<table style="width:100%" id="employeeTable">
+				  <tr>
+				    <th>Train Name</th>
+				    <th>Destination</th> 
+				    <th>Frequency (min)</th>
+				    <th>Next Arrival</th>
+				    <th>Minutes Away</th>
+				  </tr>
+
+				</table>
+
+  			</div>
+
+  		</div>
+
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">Add Train</div>
+
+  			<div class="panel-body">
+
+  				<form method="post">
+
+					<label for="trainName"> Train Name </label>
+					<br>
+					<input id="trainName" type="text">
+					<br>
+
+					<label for="destination"> Destination </label>
+					<br>
+					<input id="destination" type="text">
+					<br>
+
+					<label for="firstTime"> First Train Time (HHmm - military time) </label>
+					<br>
+					<input id="firstTime" type="text">
+					<br>
+
+					<label for="frequency"> Frequency (min) </label>
+					<br>
+					<input id="frequency" type="text">
+					<br><br>
+
+					<input class="btn btn-primary" id="addEmployee" class="submit" type="submit" value="Submit">
+
+				</form>
+
+  			</div>
+
+  		</div>
+
+	</div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
+
+  <!-- Link to Moment.js should go here -->
+  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
+
+  <!-- Script -->
+  <script>
+    // ========================================== START CODING BELOW!!
+
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyBf4ftfOG7P7cLOCCLNwSxUnMpXYfwIU-c",
+		authDomain: "train-time-ed210.firebaseapp.com",
+		databaseURL: "https://train-time-ed210.firebaseio.com",
+		projectId: "train-time-ed210",
+		storageBucket: "train-time-ed210.appspot.com",
+		messagingSenderId: "765406746100"
+	};
+	firebase.initializeApp(config);
+
+    // Create a variable to reference the database.
+    var database = firebase.database();
+
+    // Initial Values
+    var name = "";
+    var destination = "";
+    var firstTime = "";
+    var frequency = "";
+
+    // Capture Button Click
+    $("#addEmployee").on("click", function(event) {
+
+	      event.preventDefault();
+
+	      // Grabbed values from text boxes
+	      name = $("#trainName").val().trim();
+	      destination = $("#destination").val().trim();
+	      firstTime = moment($("#firstTime").val().trim(), "HHmm").format("X");
+	      frequency = $("#frequency").val().trim();
+
+	      // Code for handling the push
+	      database.ref().push({
+	        name: name,
+	        destination: destination,
+	        firstTime: firstTime,
+	        frequency: frequency,
+	        dateAdded: firebase.database.ServerValue.TIMESTAMP
+	      });
+
+		// Alert
+		alert("Employee successfully added");
+
+		// Clears all of the text-boxes
+		$("#trainName").val("");
+		$("#destination").val("");
+		$("#firstTime").val("");
+		$("#rate").val("");
+
+	});
+
+
+    // Firebase watcher + initial loader HINT: This code behaves similarly to .on("value")
+    database.ref().on("child_added", function(childSnapshot) {
+
+		console.log(childSnapshot.val());
+
+		// Store everything into a variable.
+		var name = childSnapshot.val().name;
+		var destination = childSnapshot.val().destination;
+		var firstTime = childSnapshot.val().firstTime;
+		var frequency = childSnapshot.val().frequency;
+
+		var nextArrival;
+		var miutesAway;
+
+		// Employee Info
+		console.log(name);
+		console.log(destination);
+		console.log(firstTime);
+		console.log(frequency);
+
+		// Prettify the employee start
+		var empStartPretty = moment.unix(firstTime).format("MM/DD/YY");
+
+		// Calculate the months worked using hardcore math
+		// To calculate the months worked
+		// var calculateMonthsWorked = moment().diff(moment.unix(startDate, "X"), "months");
+
+		//console.log(calculateMonthsWorked);
+
+		// Calculate the total billed rate
+		//var billed = calculateMonthsWorked * rate;
+		//console.log(billed);
+
+		// full list of items to the well
+		$("#employeeTable").append("<tr><td>" + name + 
+			"</td><td>" + destination +
+			"</td><td>" + frequency +
+			"</td><td>" + nextArrival + 
+			"</td><td>" + miutesAway + 
+			"</td>" );
+
+		// Handle the errors
+		}, function(errorObject) {
+		console.log("Errors handled: " + errorObject.code);
+
+	});
+
+  </script>
+
+</body>
+
+</html>

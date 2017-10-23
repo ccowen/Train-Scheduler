@@ -1,0 +1,35 @@
+/* font-family: 'Love Ya Like A Sister', cursive;
+font-family: 'Open Sans', sans-serif; */
+
+.mainHeading {
+	background-image: url("../images/trainHeader.jpg");
+	background-size: 100% ;
+    background-repeat: no-repeat;
+	color: white;
+	text-align: center;
+	font-family: 'Love Ya Like A Sister', cursive;
+}
+
+.panel-default > .panel-heading {
+  color: white;
+  font-family: 'Love Ya Like A Sister', cursive;
+  font-size: 20px;
+  background-color: #37608C;
+  border-color: #37608C;
+}
+
+table,
+form {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+}
+
+label,
+td {
+	margin-top: 10px;
+}
+
+th {
+	font-weight: bold;
+	text-decoration: underline;
+}
