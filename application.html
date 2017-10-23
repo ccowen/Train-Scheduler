@@ -7,12 +7,20 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-
 	<!-- internal css -->
 	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
 	<!-- google fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister|Open+Sans" rel="stylesheet">
+
+	<!-- Added Moment JS -->
+	<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery.js"></script>
+
+	<!-- firebase -->
+	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 
 </head>
 
@@ -85,14 +93,6 @@
 
 	</div>
 
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery.js"></script>
-
-  <script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
-
-  <!-- Link to Moment.js should go here -->
-  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
-
 
   <!-- Script -->
   <script>
@@ -164,14 +164,35 @@
 		var nextArrival;
 		var miutesAway;
 
-		// Employee Info
+		// train Info
 		console.log(name);
 		console.log(destination);
 		console.log(firstTime);
 		console.log(frequency);
 
-		// Prettify the employee start
-		var empStartPretty = moment.unix(firstTime).format("MM/DD/YY");
+		// modify the time format
+		var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+    	console.log(firstTimeConverted);
+
+    	// Current Time
+	    var currentTime = moment();
+	    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+	    // Difference between the times
+	    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+	    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+	    // Time apart (remainder)
+	    var tRemainder = diffTime % frequency;
+	    console.log(tRemainder);
+
+	    // Minute Until Train
+	    var tMinutesTillTrain = frequency - tRemainder;
+	    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+	    // Next Train
+	    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+	    var nextTrainTime = moment(nextTrain).format("hh:mm");
 
 		// Calculate the months worked using hardcore math
 		// To calculate the months worked
@@ -187,8 +208,8 @@
 		$("#employeeTable").append("<tr><td>" + name + 
 			"</td><td>" + destination +
 			"</td><td>" + frequency +
-			"</td><td>" + nextArrival + 
-			"</td><td>" + miutesAway + 
+			"</td><td>" + nextTrainTime + 
+			"</td><td>" + tMinutesTillTrain + 
 			"</td>" );
 
 		// Handle the errors
