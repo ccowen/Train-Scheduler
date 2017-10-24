@@ -13,7 +13,6 @@
 	<!-- google fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Lato|Open+Sans" rel="stylesheet">
 
-
 </head>
 
 <body>
@@ -35,14 +34,16 @@
 
   			<div class="panel-body">
   				
-				<table style="width:100%" id="employeeTable">
-				  <tr>
-				    <th>Train Name</th>
-				    <th>Destination</th> 
-				    <th>Frequency (min)</th>
-				    <th>Next Arrival</th>
-				    <th>Minutes Away</th>
-				  </tr>
+				<table style="width:100%" id="myTable" class="display">
+				  <thead id="myTableAppendHere">
+				  	<tr>
+					    <th>Train Name</th>
+					    <th>Destination</th> 
+					    <th>Frequency (min)</th>
+					    <th>Next Arrival</th>
+					    <th>Minutes Away</th>
+					</tr>
+				  </thead>
 
 				</table>
 
@@ -89,8 +90,6 @@
 
 	</div>
 
-	<!-- internal javascript -->
-
 	<!-- firebase -->
 	<script src="https://www.gstatic.com/firebasejs/4.6.0/firebase.js"></script>
 	<script>
@@ -111,6 +110,12 @@
 
 	<!-- jQuery -->
 	<script src="https://code.jquery.com/jquery.js"></script>
+
+	<!-- Datatables -->
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 
 	<!-- internal Javascript -->
 	<script type="text/javascript" src="assets/javascript/javascript.js"></script>

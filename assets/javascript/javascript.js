@@ -1,3 +1,4 @@
+
 // Create a variable to reference the database.
 var database = firebase.database();
 
@@ -90,22 +91,60 @@ database.ref().on("child_added", function(childSnapshot) {
     };
 
 	// full list of items to the well
-	$("#employeeTable").append("<tr><td>" + name + 
+	$("#myTableAppendHere").append("<tbody><tr><td>" + name + 
 		"</td><td>" + destination +
 		"</td><td>" + frequency +
 		"</td><td>" + nextTrainTime + 
-		"</td>" + almostHere(tMinutesTillTrain)
+		"</td>" + almostHere(tMinutesTillTrain) + "</tr>"
 		);
-
-	var parent = document.getElementsByClassName("minutesUntilNextAlmostHere")[0].parentNode;
-
-	$(parent).addClass(minutesUntilNextAlmostHere);
 
 	// Handle the errors
 	}, function(errorObject) {
 	console.log("Errors handled: " + errorObject.code);
 
 });
+
+$(document).ready(function(){
+    $('#myTable').DataTable();
+});
+
+	/* var $parent = document.getElementsByClassName("minutesUntilNextAlmostHere")[0].parentNode;
+
+	$(parent).addClass(minutesUntilNextAlmostHere);
+
+function sortTable(col,dir){
+
+  var rows = $('#livefeeds tbody  tr').removeClass('row_alt').get();
+  
+  var t=1;
+  if(!dir || dir=='dec') {
+	  t=-1;
+  } else if(dir=='asc') {
+	  t=1;
+  }
+  rows.sort(function(a, b) {
+	  var A = $(a).children('td').eq(col).text().toUpperCase();
+	  var B = $(b).children('td').eq(col).text().toUpperCase();
+	
+	  if(A <b> B) {
+		return t;
+	  }
+	
+	  return 0;
+  });
+
+    $.each(rows, function(index, row) {
+	$('#livefeeds').children('tbody').append(row);
+		if( index%2 == 1){
+			$(row).addClass('row_alt');
+		}
+	
+  }); 
+
+ }*/
+
+
+
 
 /*
 setInterval(function(){
