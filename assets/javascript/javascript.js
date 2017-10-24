@@ -28,24 +28,20 @@ $("#addEmployee").on("click", function(event) {
         dateAdded: firebase.database.ServerValue.TIMESTAMP
       });
 
-	// Alert
-	alert("Employee successfully added");
-
 	// Clears all of the text-boxes
 	$("#trainName").val("");
 	$("#destination").val("");
 	$("#firstTime").val("");
-	$("#rate").val("");
+	$("#frequency").val("");
 
 });
 
 
 // Firebase watcher + initial loader HINT: This code behaves similarly to .on("value")
-setInterval(function(){
 
-  database.ref().on("child_added", function(childSnapshot) {
+database.ref().on("child_added", function(childSnapshot) {
 
-	console.log(childSnapshot.val());
+	// console.log(childSnapshot.val());
 
 	// Store everything into a variable.
 	var name = childSnapshot.val().name;
@@ -55,12 +51,6 @@ setInterval(function(){
 
 	var nextArrival;
 	var miutesAway;
-
-	// train Info
-	console.log(name);
-	console.log(destination);
-	console.log(firstTime);
-	console.log(frequency);
 
 	// modify the time format
 	var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
@@ -84,20 +74,46 @@ setInterval(function(){
 
     // Next Train
     var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-    var nextTrainTime = moment(nextTrain).format("hh:mm");
+    var nextTrainTime = moment(nextTrain).format("hh:mm A");
+
+    function almostHere(time) {
+
+    	if (time <= 5)
+    		return "</td><td class='minutesUntilNextAlmostAlmostHere'>" + tMinutesTillTrain + "</td>";
+    	else if	(time < 30) {
+			return "</td><td class='minutesUntilNextAlmostHere'>" + tMinutesTillTrain + "</td>"; 
+		} 
+		else if (time >= 30) {
+			return "</td><td>" + tMinutesTillTrain + "</td>";
+		}
+
+    };
 
 	// full list of items to the well
 	$("#employeeTable").append("<tr><td>" + name + 
 		"</td><td>" + destination +
 		"</td><td>" + frequency +
 		"</td><td>" + nextTrainTime + 
-		"</td><td>" + tMinutesTillTrain + 
-		"</td>" );
+		"</td>" + almostHere(tMinutesTillTrain)
+		);
+
+	var parent = document.getElementsByClassName("minutesUntilNextAlmostHere")[0].parentNode;
+
+	$(parent).addClass(minutesUntilNextAlmostHere);
 
 	// Handle the errors
 	}, function(errorObject) {
 	console.log("Errors handled: " + errorObject.code);
 
-  });
+});
 
-},60000);
+/*
+setInterval(function(){
+	database.ref().on("child_added", function(childSnapshot) {
+		var frequency = childSnapshot.val().frequency;
+		$("#frequencyId").text(frequency);
+
+	console.log("timer");
+},60000); */
+
+
