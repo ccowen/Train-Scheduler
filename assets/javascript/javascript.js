@@ -80,18 +80,18 @@ database.ref().on("child_added", function(childSnapshot) {
     function almostHere(time) {
 
     	if (time <= 5)
-    		return "</td><td class='minutesUntilNextAlmostAlmostHere'>" + tMinutesTillTrain + "</td>";
+    		return "<td class='minutesUntilNextAlmostAlmostHere'>" + tMinutesTillTrain + "</td>";
     	else if	(time < 30) {
-			return "</td><td class='minutesUntilNextAlmostHere'>" + tMinutesTillTrain + "</td>"; 
+			return "<td class='minutesUntilNextAlmostHere'>" + tMinutesTillTrain + "</td>"; 
 		} 
 		else if (time >= 30) {
-			return "</td><td>" + tMinutesTillTrain + "</td>";
+			return "<td>" + tMinutesTillTrain + "</td>";
 		}
 
     };
 
 	// full list of items to the well
-	$("#myTableAppendHere").append("<tbody><tr><td>" + name + 
+	$("#myTableAppendHere").append("<tr><td>" + name + 
 		"</td><td>" + destination +
 		"</td><td>" + frequency +
 		"</td><td>" + nextTrainTime + 
