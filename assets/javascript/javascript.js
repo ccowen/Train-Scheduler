@@ -66,7 +66,17 @@ function getData() {
 
 	    // Next Train
 	    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-	    var nextTrainTime = moment(nextTrain).format("hh:mm A");
+	    var nextTrainTime = moment(nextTrain).format("hh:mm A"); 
+	    function ifTrainTime(){
+	    	if (tMinutesTillTrain >= 1440) {
+	    			return moment(nextTrain).format("MM/DD ");
+	    	}
+	    	else {
+	    		return "";
+	    	}
+	    };
+
+	    var dataTrainTime = ifTrainTime() + nextTrainTime ;
 
 	    /* code before added datatable code
 	    function almostHere(time) {
@@ -107,7 +117,7 @@ function getData() {
 	    };
 
 		$('#myTable').DataTable().row.add([
-		  name, destination, frequency, nextTrainTime, almostHere(tMinutesTillTrain)
+		  name, destination, frequency, dataTrainTime, almostHere(tMinutesTillTrain)
 		]).draw();
 
 		// Handle the errors
