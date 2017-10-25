@@ -11,6 +11,7 @@ var miutesAway;
 
 // ------------------------- functions for child_snapshot -------------------------
 
+//if the train if not arriving in 24 hours, display the date of arrival
 function ifTrainTime(minutes, nextTime){
 	if (minutes >= 1440) {
 			return moment(nextTime).format("MM/DD ");
@@ -20,6 +21,7 @@ function ifTrainTime(minutes, nextTime){
 	}
 };
 
+//display badges for trains that are close
 function almostHere(minutesAway) {
 
 	if (minutesAway <= 5) {
@@ -36,7 +38,8 @@ function almostHere(minutesAway) {
 
 };
 
- function timeConversion(minutes) {
+// display minutes in other units if longer time (hr, days)
+function timeConversion(minutes) {
 
 	var hours = Math.floor(minutes/60);
 
@@ -75,7 +78,7 @@ $("#addEmployee").on("click", function(event) {
       // Grabbed values from text boxes
       name = $("#trainName").val().trim();
       destination = $("#destination").val().trim();
-      firstTime = moment($("#firstTime").val().trim(), "HHmm").format("X");
+      firstTime = $("#firstTime").val().trim();
       frequency = $("#frequency").val().trim();
 
       // Code for handling the push
@@ -177,11 +180,12 @@ $(document).ready(function(){
 	        .row( $(this).parents('tr') )
 	        .remove()
 	        .draw();
+
 	} );
 
 	var myVar = setInterval(function(){ 
 
-		// remove the existing rows from the table
+		// remove the existing rows from the datatable, but not firebase
 		var table = $('#myTable').DataTable();
  
 		var rows = table
@@ -189,7 +193,9 @@ $(document).ready(function(){
 		    .remove()
 		    .draw();
 
-		getData() }, 5000);
+		getData() 
+
+	}, 5000);
 
 });
 
