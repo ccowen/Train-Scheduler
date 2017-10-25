@@ -2,12 +2,72 @@
 var database = firebase.database();
 
 // Initial Values
-var name = "";
-var destination = "";
-var firstTime = "";
-var frequency = "";
+var name;
+var destination;
+var firstTime;
+var frequency;
+var nextArrival;
+var miutesAway;
 
-// Capture Button Click
+// ------------------------- functions for child_snapshot -------------------------
+
+function ifTrainTime(minutes, nextTime){
+	if (minutes >= 1440) {
+			return moment(nextTime).format("MM/DD ");
+	}
+	else {
+		return "";
+	}
+};
+
+function almostHere(minutesAway) {
+
+	if (minutesAway <= 5) {
+		var almostAlmost = minutesAway + "<div id='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
+		return almostAlmost;
+	}
+	else if	(minutesAway < 20) {
+		var almost = minutesAway + "<div id='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
+		return almost;
+	} 
+	else if (minutesAway >= 20) {
+		return minutesAway + "<div id='delete'></div>";
+	}
+
+};
+
+ function timeConversion(minutes) {
+
+	var hours = Math.floor(minutes/60);
+
+	var minutesRemainderHours = minutes % 60
+	
+	var days = Math.floor(hours/24);
+
+	var hoursRemainderDays = hours % 24
+
+    if (minutes < 60) {
+        return minutes + " min";
+    } 
+    else if (minutes < 1440 && minutesRemainderHours == 0) {
+    	return hours + " hr" ;
+    } 
+    else if (minutes < 1440) {
+        return hours + " hr & " + minutesRemainderHours + " min";
+    } 
+    else if (hoursRemainderDays == 0) {
+        return days + " days";
+    } 
+    else if (minutesRemainderHours == 0) {
+        return days + " days & " + hoursRemainderDays + "hr";
+    }
+    else {
+        return days + " days & " + hoursRemainderDays + "hr & " + minutesRemainderHours + " min";
+    } 
+};
+
+// ------------------------------- Capture Button Click -----------------------------
+
 $("#addEmployee").on("click", function(event) {
 
       event.preventDefault();
@@ -41,13 +101,13 @@ function getData() {
 	database.ref().on("child_added" , function(childSnapshot) {
 
 		// Store everything into a variable.
-		var name = childSnapshot.val().name;
-		var destination = childSnapshot.val().destination;
-		var firstTime = childSnapshot.val().firstTime;
-		var frequency = childSnapshot.val().frequency;
+		name = childSnapshot.val().name;
+		destination = childSnapshot.val().destination;
+		firstTime = childSnapshot.val().firstTime;
+		frequency = childSnapshot.val().frequency;
 
-		var nextArrival;
-		var miutesAway;
+		nextArrival;
+		miutesAway;
 
 		// modify the time format
 		var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
@@ -67,16 +127,8 @@ function getData() {
 	    // Next Train
 	    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
 	    var nextTrainTime = moment(nextTrain).format("hh:mm A"); 
-	    function ifTrainTime(){
-	    	if (tMinutesTillTrain >= 1440) {
-	    			return moment(nextTrain).format("MM/DD ");
-	    	}
-	    	else {
-	    		return "";
-	    	}
-	    };
 
-	    var dataTrainTime = ifTrainTime() + nextTrainTime ;
+	    var dataTrainTime = ifTrainTime(tMinutesTillTrain, nextTrain) + nextTrainTime ;
 
 	    /* code before added datatable code
 	    function almostHere(time) {
@@ -100,24 +152,8 @@ function getData() {
 			"</td>" + almostHere(tMinutesTillTrain) + "</tr>"
 			); */
 
-		function almostHere(time) {
-
-	    	if (time <= 5) {
-	    		var almostAlmost = tMinutesTillTrain + "<div id='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
-	    		return almostAlmost;
-	    	}
-	    	else if	(time < 20) {
-	    		var almost = tMinutesTillTrain + "<div id='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
-	    		return almost;
-			} 
-			else if (time >= 20) {
-				return tMinutesTillTrain + "<div id='delete'></div>";
-			}
-
-	    };
-
 		$('#myTable').DataTable().row.add([
-		  name, destination, frequency, dataTrainTime, almostHere(tMinutesTillTrain)
+		  name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain)
 		]).draw();
 
 		// Handle the errors
