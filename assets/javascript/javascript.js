@@ -21,24 +21,6 @@ function ifTrainTime(minutes, nextTime){
 	}
 };
 
-//display badges for trains that are close
-function almostHere(minutesAway) {
-
-	if (minutesAway <= 5) {
-		var almostAlmost = minutesAway + "<div id='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
-		return almostAlmost;
-	}
-	else if	(minutesAway < 20) {
-		var almost = minutesAway + "<div id='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
-		return almost;
-	} 
-	else if (minutesAway >= 20) {
-		return minutesAway + "<div id='delete'></div>";
-	}
-
-};
-
-// display minutes in other units if longer time (hr, days)
 function timeConversion(minutes) {
 
 	var hours = Math.floor(minutes/60);
@@ -50,23 +32,40 @@ function timeConversion(minutes) {
 	var hoursRemainderDays = hours % 24
 
     if (minutes < 60) {
-        return minutes + " min";
+        return minutes + "m";
     } 
     else if (minutes < 1440 && minutesRemainderHours == 0) {
-    	return hours + " hr" ;
+    	return hours + "h" ;
     } 
     else if (minutes < 1440) {
-        return hours + " hr & " + minutesRemainderHours + " min";
+        return hours + "h + " + minutesRemainderHours + "m";
     } 
     else if (hoursRemainderDays == 0) {
         return days + " days";
     } 
     else if (minutesRemainderHours == 0) {
-        return days + " days & " + hoursRemainderDays + "hr";
+        return days + " days + " + hoursRemainderDays + "h";
     }
     else {
-        return days + " days & " + hoursRemainderDays + "hr & " + minutesRemainderHours + " min";
+        return days + " days + " + hoursRemainderDays + "h + " + minutesRemainderHours + "m";
     } 
+};
+
+//display badges for trains that are close
+function almostHere(minutesAway) {
+
+	if (minutesAway <= 5) {
+		var almostAlmost = timeConversion(minutesAway) + "<div id='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
+		return almostAlmost;
+	}
+	else if	(minutesAway < 20) {
+		var almost = timeConversion(minutesAway) + "<div id='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
+		return almost;
+	} 
+	else if (minutesAway >= 20) {
+		return timeConversion(minutesAway) + "<div id='delete'></div>";
+	}
+
 };
 
 // ------------------------------- Capture Button Click -----------------------------
