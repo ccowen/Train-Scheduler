@@ -1,14 +1,6 @@
 // Create a variable to reference the database.
 var database = firebase.database();
 
-// Initial Values
-var name;
-var destination;
-var firstTime;
-var frequency;
-var nextArrival;
-var miutesAway;
-
 // ------------------------- functions for child_snapshot -------------------------
 
 //if the train if not arriving in 24 hours, display the date of arrival
@@ -38,35 +30,89 @@ function timeConversion(minutes) {
     	return hours + "h" ;
     } 
     else if (minutes < 1440) {
-        return hours + "h + " + minutesRemainderHours + "m";
+        return hours + "h " + minutesRemainderHours + "m";
     } 
     else if (hoursRemainderDays == 0) {
-        return days + " days";
+        return days + "d";
     } 
     else if (minutesRemainderHours == 0) {
-        return days + " days + " + hoursRemainderDays + "h";
+        return days + "d " + hoursRemainderDays + "h";
     }
     else {
-        return days + " days + " + hoursRemainderDays + "h + " + minutesRemainderHours + "m";
+        return days + "d " + hoursRemainderDays + "h " + minutesRemainderHours + "m";
     } 
 };
 
-//display badges for trains that are close
-function almostHere(minutesAway) {
+//display badges for trains that are close and display the delete button
+function almostHere(minutesAway, key) {
+
+	var deleteDiv = $("<div class='delete'></div>")
+
+	deleteDiv.attr("id", key)
 
 	if (minutesAway <= 5) {
-		var almostAlmost = timeConversion(minutesAway) + "<div id='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
+		var almostAlmost = timeConversion(minutesAway) + deleteDiv + "<div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
 		return almostAlmost;
 	}
 	else if	(minutesAway < 20) {
-		var almost = timeConversion(minutesAway) + "<div id='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
+		var almost = timeConversion(minutesAway) + deleteDiv + "<div class='minutesUntilNextAlmostHere'>In Range</div>";
 		return almost;
 	} 
 	else if (minutesAway >= 20) {
-		return timeConversion(minutesAway) + "<div id='delete'></div>";
+		return timeConversion(minutesAway) + deleteDiv;
 	}
 
 };
+
+// ------------------------------- function to getData on timeout -------------------
+
+function getData() {
+	var query = firebase.database().ref().orderByKey();
+	query.once("value")
+	  .then(function(snapshot) {
+	    snapshot.forEach(function(childSnapshot) {
+	      // key will be "ada" the first time and "alan" the second time
+	      var key = childSnapshot.key;
+	      // childData will be the actual contents of the child
+	      var childData = childSnapshot.val();
+
+	// Store everything into a variable.
+		var name = childSnapshot.val().name;
+		var destination = childSnapshot.val().destination;
+		var firstTime = childSnapshot.val().firstTime;
+		var frequency = childSnapshot.val().frequency;
+
+		var nextArrival;
+		var minutesAway;
+
+		// modify the time format
+		var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+
+		// Current Time
+	    var currentTime = moment();
+
+	    // Difference between the times
+	    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+
+	    // Time apart (remainder)
+	    var tRemainder = diffTime % frequency;
+
+	    // Minute Until Train
+	    var tMinutesTillTrain = frequency - tRemainder;
+
+	    // Next Train
+	    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+	    var nextTrainTime = moment(nextTrain).format("hh:mm A"); 
+
+	    var dataTrainTime = ifTrainTime(tMinutesTillTrain, nextTrain) + nextTrainTime ;
+
+		$('#myTable').DataTable().row.add([
+			name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain)
+		]).draw();
+
+	  });
+	});
+}
 
 // ------------------------------- Capture Button Click -----------------------------
 
@@ -97,88 +143,79 @@ $("#addEmployee").on("click", function(event) {
 
 });
 
-// function for intial firebase loading
-function getData() {
+// -------------------- function for intial firebase loading ------------------
 
-	database.ref().on("child_added" , function(childSnapshot) {
+database.ref().on("child_added" , function(childSnapshot) {
 
-		// Store everything into a variable.
-		name = childSnapshot.val().name;
-		destination = childSnapshot.val().destination;
-		firstTime = childSnapshot.val().firstTime;
-		frequency = childSnapshot.val().frequency;
+	// Store everything into a variable.
+	var name = childSnapshot.val().name;
+	var destination = childSnapshot.val().destination;
+	var firstTime = childSnapshot.val().firstTime;
+	var frequency = childSnapshot.val().frequency;
 
-		nextArrival;
-		miutesAway;
+	var nextArrival;
+	var miutesAway;
 
-		// modify the time format
-		var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
+	var key = snapshot.key;
 
-		// Current Time
-	    var currentTime = moment();
+	// modify the time format
+	var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
 
-	    // Difference between the times
-	    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+	// Current Time
+    var currentTime = moment();
 
-	    // Time apart (remainder)
-	    var tRemainder = diffTime % frequency;
+    // Difference between the times
+    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
 
-	    // Minute Until Train
-	    var tMinutesTillTrain = frequency - tRemainder;
+    // Time apart (remainder)
+    var tRemainder = diffTime % frequency;
 
-	    // Next Train
-	    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-	    var nextTrainTime = moment(nextTrain).format("hh:mm A"); 
+    // Minute Until Train
+    var tMinutesTillTrain = frequency - tRemainder;
 
-	    var dataTrainTime = ifTrainTime(tMinutesTillTrain, nextTrain) + nextTrainTime ;
+    // Next Train
+    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    var nextTrainTime = moment(nextTrain).format("hh:mm A"); 
 
-	    /* code before added datatable code
-	    function almostHere(time) {
+    var dataTrainTime = ifTrainTime(tMinutesTillTrain, nextTrain) + nextTrainTime ;
 
-	    	if (time <= 5)
-	    		return "<td class='minutesUntilNextAlmostAlmostHere'>" + tMinutesTillTrain + "</td>";
-	    	else if	(time < 30) {
-				return "<td class='minutesUntilNextAlmostHere'>" + tMinutesTillTrain + "</td>"; 
-			} 
-			else if (time >= 30) {
-				return "<td>" + tMinutesTillTrain + "</td>";
-			}
+	$('#myTable').DataTable().row.add([
+	  name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain, key)
+	]).draw();
 
-	    };
+	// Handle the errors
+	}, function(errorObject) {
+	console.log("Errors handled: " + errorObject.code);
 
-		 full list of items to the well
-		$("#myTableAppendHere").append("<tr><td>" + name + 
-			"</td><td>" + destination +
-			"</td><td>" + frequency +
-			"</td><td>" + nextTrainTime + 
-			"</td>" + almostHere(tMinutesTillTrain) + "</tr>"
-			); */
+});
 
-		$('#myTable').DataTable().row.add([
-		  name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain)
-		]).draw();
-
-		// Handle the errors
-		}, function(errorObject) {
-		console.log("Errors handled: " + errorObject.code);
-
-	});
-
-};
 
 $(document).ready(function(){
-
-	getData();
 
     $('#myTable').DataTable();
 
     var table = $('#myTable').DataTable();
 
-    $('#myTable tbody').on( 'click', '#delete', function () {
+    $('#myTable tbody').on( 'click', '.delete', function () {
 	    table
 	        .row( $(this).parents('tr') )
 	        .remove()
 	        .draw();
+
+
+
+	    var id = table
+	    		.row( $(this).parents('tr') )
+	    		.data();
+
+	    console.log(id);
+		console.log(id[0]);
+
+	    var deleteName = id[0];
+
+	    // missing something here
+
+		database.ref.child(deleteName).remove();
 
 	} );
 
@@ -191,6 +228,15 @@ $(document).ready(function(){
 		    .rows()
 		    .remove()
 		    .draw();
+
+		/* firebase remove row
+		var $row = $(this).closest('tr');
+
+		var rowId = $row.data('id');
+		rootRef.child(rowId).remove()
+	    //it should remove the firebase object in here
+	    rootRef.child(assetKey).remove()
+	    //after firebase confirmation, remove table row */
 
 		getData() 
 
