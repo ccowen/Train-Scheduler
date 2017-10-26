@@ -44,22 +44,18 @@ function timeConversion(minutes) {
 };
 
 //display badges for trains that are close and display the delete button
-function almostHere(minutesAway, key) {
-
-	var deleteDiv = $("<div class='delete'></div>")
-
-	deleteDiv.attr("id", key)
+function almostHere(minutesAway) {
 
 	if (minutesAway <= 5) {
-		var almostAlmost = timeConversion(minutesAway) + deleteDiv + "<div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
+		var almostAlmost = timeConversion(minutesAway) + "<div class='delete'></div><div class='minutesUntilNextAlmostAlmostHere'>Almost Here</div>";
 		return almostAlmost;
 	}
 	else if	(minutesAway < 20) {
-		var almost = timeConversion(minutesAway) + deleteDiv + "<div class='minutesUntilNextAlmostHere'>In Range</div>";
+		var almost = timeConversion(minutesAway) + "<div class='delete'></div><div class='minutesUntilNextAlmostHere'>In Range</div>";
 		return almost;
 	} 
 	else if (minutesAway >= 20) {
-		return timeConversion(minutesAway) + deleteDiv;
+		return timeConversion(minutesAway) + "<div class='delete'></div>";
 	}
 
 };
@@ -156,8 +152,6 @@ database.ref().on("child_added" , function(childSnapshot) {
 	var nextArrival;
 	var miutesAway;
 
-	var key = snapshot.key;
-
 	// modify the time format
 	var firstTimeConverted = moment(firstTime, "hh:mm").subtract(1, "years");
 
@@ -180,7 +174,7 @@ database.ref().on("child_added" , function(childSnapshot) {
     var dataTrainTime = ifTrainTime(tMinutesTillTrain, nextTrain) + nextTrainTime ;
 
 	$('#myTable').DataTable().row.add([
-	  name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain, key)
+	  name, destination, timeConversion(frequency), dataTrainTime, almostHere(tMinutesTillTrain)
 	]).draw();
 
 	// Handle the errors
@@ -215,7 +209,9 @@ $(document).ready(function(){
 
 	    // missing something here
 
-		database.ref.child(deleteName).remove();
+	    firebase.database().ref.child('train-time-ed210').orderByChild('name').equalTo(deleteName).remove();
+
+		//database.ref.child(deleteName).remove();
 
 	} );
 
@@ -240,7 +236,7 @@ $(document).ready(function(){
 
 		getData() 
 
-	}, 5000);
+	}, 60000);
 
 });
 
