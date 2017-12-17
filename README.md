@@ -1,6 +1,6 @@
 # Train Scheduler
 
-calculates when the next train is coming
+table to display when the next train is coming, firebase for database, javascript functions
 
 ## [demo](https://ccowen.github.io/Train-Scheduler/)   //  sample image
 
